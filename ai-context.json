@@ -1,0 +1,72 @@
+{
+  "projectName": "Zebra Label Platform",
+  "goal": "Application fullstack pour concevoir, prévisualiser et imprimer des étiquettes Zebra via WebUSB.",
+  "stack": {
+    "backend": ".NET 10",
+    "webApi": "ASP.NET Core 10",
+    "orchestration": "Aspire 13",
+    "frontend": "Svelte 5 with runes + Vite",
+    "previewEngine": "Labelize self-hosted",
+    "database": "PostgreSQL"
+  },
+  "hardConstraints": [
+    "Aucune dépendance à une API externe non contrôlée pour la prévisualisation.",
+    "Le système doit supporter EPL et ZPL de bout en bout.",
+    "L'impression USB doit se faire dans le navigateur via WebUSB.",
+    "L'architecture doit privilégier le vertical slice architecture.",
+    "Le code doit viser une qualité production-ready."
+  ],
+  "boundedContexts": [
+    "Templates",
+    "Preview",
+    "PrinterProfiles",
+    "PrintJobs",
+    "DeviceConnectivity"
+  ],
+  "runtimeResponsibilities": {
+    "frontend": [
+      "Sélectionner un périphérique Zebra compatible via WebUSB",
+      "Gérer le statut de connexion navigateur <-> imprimante",
+      "Préparer et envoyer la charge utile brute EPL ou ZPL",
+      "Afficher la prévisualisation et l'état de rendu"
+    ],
+    "backend": [
+      "Gérer les templates, variables, dimensions et profils d'imprimantes",
+      "Valider les requêtes et les charges utiles EPL/ZPL",
+      "Proxyfier les appels vers Labelize",
+      "Tracer les previews et les jobs d'impression",
+      "Exposer des endpoints métier versionnés"
+    ],
+    "labelize": [
+      "Rendre EPL ou ZPL en PNG ou PDF",
+      "Exposer un endpoint HTTP interne de conversion"
+    ]
+  },
+  "decisions": {
+    "previewStrategy": "Toujours utiliser Labelize self-hosted via le backend. Pas d'appel direct à Labelary.",
+    "printStrategy": "Imprimer dans le langage source du template quand l'imprimante le supporte.",
+    "fallbackStrategy": "Si le profil d'imprimante n'accepte qu'un seul langage, convertir EPL -> ZPL via un adaptateur interne explicite et journalisé.",
+    "authStrategy": "Pas d'authentification dans le MVP, mais les abstractions doivent permettre l'ajout d'un ICurrentUser plus tard.",
+    "frontendHosting": "Frontend Svelte séparé en développement, artefacts statiques servis par l'API en production si souhaité."
+  },
+  "mustHaveEntities": [
+    "LabelTemplate",
+    "TemplateVariable",
+    "PrinterProfile",
+    "PrintJob",
+    "PrintPayload",
+    "LabelDimensions"
+  ],
+  "mustHaveTesting": [
+    "Unit tests backend par slice",
+    "Contract tests des endpoints",
+    "Frontend component tests",
+    "E2E critique sur preview + impression simulée",
+    "Golden tests sur rendu Labelize quand possible"
+  ],
+  "references": [
+    "ProofOfConcept/EplToPdfConverter pour l'idée initiale WebUSB + EPL builder",
+    "GOODBOY008/labelize comme moteur de rendu self-hosted"
+  ]
+}
+

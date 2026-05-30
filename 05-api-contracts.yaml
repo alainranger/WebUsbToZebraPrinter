@@ -1,0 +1,444 @@
+openapi: 3.1.0
+info:
+  title: Zebra Label Platform API
+  version: 1.0.0-draft
+servers:
+  - url: https://localhost:5001
+paths:
+  /api/templates:
+    get:
+      summary: List templates
+      responses:
+        "200":
+          description: Template list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LabelTemplateSummary"
+    post:
+      summary: Create template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTemplateRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabelTemplateDetails"
+  /api/templates/{templateId}:
+    get:
+      summary: Get template details
+      parameters:
+        - $ref: "#/components/parameters/TemplateId"
+      responses:
+        "200":
+          description: Details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabelTemplateDetails"
+        "404":
+          $ref: "#/components/responses/NotFound"
+    put:
+      summary: Update template
+      parameters:
+        - $ref: "#/components/parameters/TemplateId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTemplateRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LabelTemplateDetails"
+  /api/templates/{templateId}/render:
+    post:
+      summary: Render a saved template
+      parameters:
+        - $ref: "#/components/parameters/TemplateId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RenderTemplateRequest"
+      responses:
+        "200":
+          description: Rendered image or pdf
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+  /api/preview/render:
+    post:
+      summary: Render raw EPL or ZPL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RawRenderRequest"
+      responses:
+        "200":
+          description: Rendered preview
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          $ref: "#/components/responses/ValidationProblem"
+  /api/printer-profiles:
+    get:
+      summary: List printer profiles
+      responses:
+        "200":
+          description: Printer profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PrinterProfile"
+    post:
+      summary: Create printer profile
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePrinterProfileRequest"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrinterProfile"
+  /api/printer-profiles/{printerProfileId}:
+    put:
+      summary: Update printer profile
+      parameters:
+        - $ref: "#/components/parameters/PrinterProfileId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdatePrinterProfileRequest"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrinterProfile"
+  /api/print-jobs:
+    get:
+      summary: List print jobs
+      responses:
+        "200":
+          description: Jobs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PrintJob"
+    post:
+      summary: Register a print job intent
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePrintJobRequest"
+      responses:
+        "201":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrintJob"
+  /api/print-jobs/{printJobId}:
+    get:
+      summary: Get print job
+      parameters:
+        - $ref: "#/components/parameters/PrintJobId"
+      responses:
+        "200":
+          description: Job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrintJob"
+        "404":
+          $ref: "#/components/responses/NotFound"
+  /health/ready:
+    get:
+      summary: Readiness probe
+      responses:
+        "200":
+          description: Ready
+components:
+  parameters:
+    TemplateId:
+      name: templateId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PrinterProfileId:
+      name: printerProfileId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+    PrintJobId:
+      name: printJobId
+      in: path
+      required: true
+      schema:
+        type: string
+        format: uuid
+  responses:
+    NotFound:
+      description: Resource not found
+    ValidationProblem:
+      description: Validation problem
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/ProblemDetails"
+  schemas:
+    LabelDimensions:
+      type: object
+      required: [widthMm, heightMm, dpmm]
+      properties:
+        widthMm:
+          type: number
+        heightMm:
+          type: number
+        dpmm:
+          type: integer
+    TemplateVariable:
+      type: object
+      required: [name, isRequired, order]
+      properties:
+        name:
+          type: string
+        displayName:
+          type: string
+        isRequired:
+          type: boolean
+        defaultValue:
+          type: string
+        exampleValue:
+          type: string
+        order:
+          type: integer
+    CreateTemplateRequest:
+      type: object
+      required: [name, sourceLanguage, rawContent, dimensions]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        sourceLanguage:
+          type: string
+          enum: [Epl, Zpl]
+        rawContent:
+          type: string
+        dimensions:
+          $ref: "#/components/schemas/LabelDimensions"
+        variables:
+          type: array
+          items:
+            $ref: "#/components/schemas/TemplateVariable"
+    UpdateTemplateRequest:
+      allOf:
+        - $ref: "#/components/schemas/CreateTemplateRequest"
+    LabelTemplateSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        sourceLanguage:
+          type: string
+          enum: [Epl, Zpl]
+        version:
+          type: integer
+    LabelTemplateDetails:
+      allOf:
+        - $ref: "#/components/schemas/LabelTemplateSummary"
+        - type: object
+          properties:
+            description:
+              type: string
+            rawContent:
+              type: string
+            dimensions:
+              $ref: "#/components/schemas/LabelDimensions"
+            variables:
+              type: array
+              items:
+                $ref: "#/components/schemas/TemplateVariable"
+    RawRenderRequest:
+      type: object
+      required: [language, content, dimensions, outputType]
+      properties:
+        language:
+          type: string
+          enum: [Epl, Zpl]
+        content:
+          type: string
+        dimensions:
+          $ref: "#/components/schemas/LabelDimensions"
+        outputType:
+          type: string
+          enum: [Png, Pdf]
+    RenderTemplateRequest:
+      type: object
+      required: [outputType]
+      properties:
+        outputType:
+          type: string
+          enum: [Png, Pdf]
+        variableValues:
+          type: object
+          additionalProperties:
+            type: string
+    CreatePrinterProfileRequest:
+      type: object
+      required: [name, preferredLanguage, capabilities, defaultDimensions]
+      properties:
+        name:
+          type: string
+        vendorId:
+          type: integer
+        productId:
+          type: integer
+        preferredLanguage:
+          type: string
+          enum: [Epl, Zpl]
+        capabilities:
+          $ref: "#/components/schemas/LanguageCapabilities"
+        defaultDimensions:
+          $ref: "#/components/schemas/LabelDimensions"
+        notes:
+          type: string
+    UpdatePrinterProfileRequest:
+      allOf:
+        - $ref: "#/components/schemas/CreatePrinterProfileRequest"
+    LanguageCapabilities:
+      type: object
+      required: [supportsEpl, supportsZpl, allowEplToZplFallback]
+      properties:
+        supportsEpl:
+          type: boolean
+        supportsZpl:
+          type: boolean
+        allowEplToZplFallback:
+          type: boolean
+    PrinterProfile:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        vendorId:
+          type: integer
+        productId:
+          type: integer
+        preferredLanguage:
+          type: string
+          enum: [Epl, Zpl]
+        capabilities:
+          $ref: "#/components/schemas/LanguageCapabilities"
+        defaultDimensions:
+          $ref: "#/components/schemas/LabelDimensions"
+        notes:
+          type: string
+    CreatePrintJobRequest:
+      type: object
+      required: [printerProfileId, content, requestedLanguage]
+      properties:
+        templateId:
+          type: string
+          format: uuid
+        printerProfileId:
+          type: string
+          format: uuid
+        requestedLanguage:
+          type: string
+          enum: [Epl, Zpl]
+        content:
+          type: string
+        checksum:
+          type: string
+    PrintJob:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        templateId:
+          type: string
+          format: uuid
+        printerProfileId:
+          type: string
+          format: uuid
+        requestedLanguage:
+          type: string
+          enum: [Epl, Zpl]
+        effectiveLanguage:
+          type: string
+          enum: [Epl, Zpl]
+        status:
+          type: string
+          enum: [Draft, Submitted, Rendered, Sent, Failed]
+        failureReason:
+          type: string
+    ProblemDetails:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        status:
+          type: integer
+        detail:
+          type: string
+        traceId:
+          type: string
+
