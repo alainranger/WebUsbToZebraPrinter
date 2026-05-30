@@ -1,0 +1,5 @@
+{
+    "appHost": {
+        "path": "src\\ZebraLabels.AppHost\\ZebraLabels.AppHost.csproj"
+    }
+}

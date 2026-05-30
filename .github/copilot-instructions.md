@@ -75,6 +75,7 @@ There is **no verified build, test, or lint command yet** because the .NET/Aspir
 - Keep display components as presentation-focused as possible; USB logic should not live in UI components.
 - The frontend API client should centralize `fetch` behavior and handle `problem+json`.
 - Clean up Blob/object URLs and subscriptions explicitly.
+- Always add an existing CSS class to buttons: `primary`, `secondary`, or `danger`. Never leave a button without a class, as it would inherit the raw browser style.
 
 ## Domain expectations
 

@@ -1,0 +1,59 @@
+# ============================================================
+# .NET / ASP.NET Core / Aspire
+# ============================================================
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+TestResults/
+publish/
+*.nupkg
+*.snupkg
+*.log
+
+# Entity Framework migrations snapshots (keep migrations, ignore designer files)
+**/Migrations/**/*.Designer.cs
+
+# Secrets / environment overrides
+appsettings.*.local.json
+secrets.json
+
+# ============================================================
+# Node / Svelte / Vite
+# ============================================================
+node_modules/
+dist/
+.svelte-kit/
+.vite/
+*.local
+
+# ============================================================
+# Rider / JetBrains
+# ============================================================
+.idea/
+*.iml
+
+# ============================================================
+# Visual Studio Code
+# ============================================================
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# ============================================================
+# OS
+# ============================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ============================================================
+# Aspire / Azure Developer CLI
+# ============================================================
+.azure/
+.env
+.env.*
+!.env.example

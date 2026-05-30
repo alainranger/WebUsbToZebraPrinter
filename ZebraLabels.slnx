@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ZebraLabels.Api/ZebraLabels.Api.csproj" />
+    <Project Path="src/ZebraLabels.AppHost/ZebraLabels.AppHost.csproj" />
+    <Project Path="src/ZebraLabels.ServiceDefaults/ZebraLabels.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ZebraLabels.Api.IntegrationTests/ZebraLabels.Api.IntegrationTests.csproj" />
+    <Project Path="tests/ZebraLabels.Api.UnitTests/ZebraLabels.Api.UnitTests.csproj" />
+  </Folder>
+</Solution>
