@@ -14,9 +14,62 @@ on:
             - main
 
 jobs:
+    detect-changes:
+        name: Detect Changed Areas
+        runs-on: ubuntu-latest
+        outputs:
+            dotnet_changed: ${{ steps.changed-dotnet.outputs.any_changed }}
+            web_changed: ${{ steps.changed-web.outputs.any_changed }}
+            markdown_changed: ${{ steps.changed-markdown.outputs.any_changed }}
+            markdown_files: ${{ steps.changed-markdown.outputs.all_changed_files }}
+
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Detect .NET related changes
+              id: changed-dotnet
+              uses: tj-actions/changed-files@v46
+              with:
+                  files: |
+                      **/*.cs
+                      **/*.csproj
+                      **/*.sln
+                      **/*.slnx
+                      **/*.props
+                      **/*.targets
+
+            - name: Detect web related changes
+              id: changed-web
+              uses: tj-actions/changed-files@v46
+              with:
+                  files: |
+                      src/ZebraLabels.Web/**
+
+            - name: Detect markdown changes
+              id: changed-markdown
+              uses: tj-actions/changed-files@v46
+              with:
+                  files: |
+                      **/*.md
+                  files_ignore: |
+                      **/node_modules/**
+                      **/bin/**
+                      **/obj/**
+                      **/dist/**
+                      .git/**
+
+            - name: Summary
+              run: |
+                  echo "dotnet_changed=${{ steps.changed-dotnet.outputs.any_changed }}"
+                  echo "web_changed=${{ steps.changed-web.outputs.any_changed }}"
+                  echo "markdown_changed=${{ steps.changed-markdown.outputs.any_changed }}"
+
     dotnet-format:
         name: .NET Format
         runs-on: ubuntu-latest
+        needs: detect-changes
+        if: needs.detect-changes.outputs.dotnet_changed == 'true'
 
         steps:
             - name: Checkout
@@ -39,20 +92,16 @@ jobs:
                       **/*.csproj
 
             - name: Show changed C# files
-              if: steps.changed-csharp.outputs.any_changed == 'true'
               run: echo "${{ steps.changed-csharp.outputs.all_changed_files }}"
 
             - name: Verify .NET formatting
-              if: steps.changed-csharp.outputs.any_changed == 'true'
               run: dotnet format ZebraLabels.slnx --verify-no-changes --no-restore --include ${{ steps.changed-csharp.outputs.all_changed_files }}
-
-            - name: Skip .NET formatting (no C# changes)
-              if: steps.changed-csharp.outputs.any_changed != 'true'
-              run: echo "No C# file changed in this PR."
 
     web-format:
         name: Web Format
         runs-on: ubuntu-latest
+        needs: detect-changes
+        if: needs.detect-changes.outputs.web_changed == 'true'
 
         steps:
             - name: Checkout
@@ -68,28 +117,14 @@ jobs:
             - name: Install web dependencies
               run: npm ci --prefix src/ZebraLabels.Web
 
-            - name: Collect changed web files
-              id: changed-web
-              uses: tj-actions/changed-files@v46
-              with:
-                  files: |
-                      src/ZebraLabels.Web/**/*.{css,html,js,json,svelte,ts,yaml,yml}
-
-            - name: Show changed web files
-              if: steps.changed-web.outputs.any_changed == 'true'
-              run: echo "${{ steps.changed-web.outputs.all_changed_files }}"
-
             - name: Verify web formatting
-              if: steps.changed-web.outputs.any_changed == 'true'
               run: cd src/ZebraLabels.Web && npx prettier --check .
-
-            - name: Skip web formatting (no related changes)
-              if: steps.changed-web.outputs.any_changed != 'true'
-              run: echo "No web file changed in this PR."
 
     markdown-standard:
         name: Markdown Format + Standard
         runs-on: ubuntu-latest
+        needs: detect-changes
+        if: needs.detect-changes.outputs.markdown_changed == 'true'
 
         steps:
             - name: Checkout
@@ -105,42 +140,24 @@ jobs:
             - name: Install web dependencies
               run: npm ci --prefix src/ZebraLabels.Web
 
-            - name: Collect changed markdown files
-              id: changed-markdown
-              uses: tj-actions/changed-files@v46
-              with:
-                  files: |
-                      **/*.md
-                  files_ignore: |
-                      **/node_modules/**
-                      **/bin/**
-                      **/obj/**
-                      **/dist/**
-                      .git/**
-
             - name: Show changed markdown files
-              if: steps.changed-markdown.outputs.any_changed == 'true'
-              run: echo "${{ steps.changed-markdown.outputs.all_changed_files }}"
+              run: echo "${{ needs.detect-changes.outputs.markdown_files }}"
 
             - name: Verify markdown formatting
-              if: steps.changed-markdown.outputs.any_changed == 'true'
               run: |
                   cd src/ZebraLabels.Web
-                  changed_markdown="${{ steps.changed-markdown.outputs.all_changed_files }}"
+                  changed_markdown="${{ needs.detect-changes.outputs.markdown_files }}"
                   markdown_args=$(printf '%s\n' "$changed_markdown" | tr ' ' '\n' | sed "s#^#$GITHUB_WORKSPACE/#")
                   npx prettier --check $markdown_args
 
             - name: Verify markdown standards
-              if: steps.changed-markdown.outputs.any_changed == 'true'
-              run: npx --yes markdownlint-cli2 --config .markdownlint.jsonc ${{ steps.changed-markdown.outputs.all_changed_files }}
-
-            - name: Skip markdown checks (no markdown changes)
-              if: steps.changed-markdown.outputs.any_changed != 'true'
-              run: echo "No markdown file changed in this PR."
+              run: npx --yes markdownlint-cli2 --config .markdownlint.jsonc ${{ needs.detect-changes.outputs.markdown_files }}
 
     dotnet-build-test:
         name: .NET Build + Tests
         runs-on: ubuntu-latest
+        needs: detect-changes
+        if: needs.detect-changes.outputs.dotnet_changed == 'true'
 
         steps:
             - name: Checkout
@@ -163,6 +180,8 @@ jobs:
     web-compile:
         name: Web Compile
         runs-on: ubuntu-latest
+        needs: detect-changes
+        if: needs.detect-changes.outputs.web_changed == 'true'
 
         steps:
             - name: Checkout
