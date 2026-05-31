@@ -73,4 +73,3 @@ Fournir une application web interne capable de:
 - Il peut connecter une imprimante Zebra compatible WebUSB.
 - Il peut imprimer un template avec variables substituées.
 - Les erreurs de rendu ou d'impression remontent avec un message actionnable.
-
