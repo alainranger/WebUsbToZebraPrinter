@@ -1,6 +1,6 @@
 # Niveau de qualité attendu
 
-## Backend
+## Backend (Niveau de qualité attendu)
 
 - Type safety maximale.
 - DTOs distincts par endpoint.
@@ -9,14 +9,14 @@
 - Aucun `catch` large silencieux.
 - Pas de `static helper` générique sans responsabilité métier claire.
 
-## Frontend
+## Frontend (Niveau de qualité attendu)
 
 - TypeScript strict.
 - Pas de logique USB dans les composants d'affichage.
 - États dérivés explicites.
 - Nettoyage systématique des `Blob` URLs et abonnements.
 
-## Architecture
+## Architecture (Niveau de qualité attendu)
 
 - Pas de dossier `Common` tentaculaire.
 - Pas de couche repository abstraite si EF Core suffit.
@@ -25,14 +25,14 @@
 
 ## Tests
 
-### Backend
+### Backend (Tests)
 
 - unit tests sur services métier,
 - tests de validation,
 - tests d'intégration d'endpoint par slice,
 - tests de contrat sur client Labelize.
 
-### Frontend
+### Frontend (Tests)
 
 - component tests sur les composants critiques,
 - tests de logique sur le module WebUSB avec doubles/mocks,

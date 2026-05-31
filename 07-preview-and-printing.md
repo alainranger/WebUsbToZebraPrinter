@@ -2,7 +2,7 @@
 
 ## Prévisualisation
 
-### Chemin nominal
+### Chemin nominal (prévisualisation)
 
 1. Le frontend récupère le template ou le brouillon courant.
 2. Les variables sont substituées côté backend.
@@ -17,7 +17,7 @@
 
 ## Impression
 
-### Chemin nominal
+### Chemin nominal (impression)
 
 1. Le frontend demande à l'utilisateur de connecter une imprimante Zebra via WebUSB.
 2. Le frontend résout l'endpoint `out`.
