@@ -21,7 +21,8 @@ Use this checklist in GitHub repository settings to enforce CI before merge.
 Select these checks as required:
 
 - [ ] `.NET Format`
-- [ ] `Web + Markdown Format`
+- [ ] `Web Format`
+- [ ] `Markdown Format + Standard`
 - [ ] `.NET Build + Tests`
 - [ ] `Web Compile`
 
