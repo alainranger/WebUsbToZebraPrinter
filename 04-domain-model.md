@@ -122,4 +122,3 @@ Invariants:
 - applique la taille max,
 - choisit le format de rendu,
 - impose les dimensions.
-

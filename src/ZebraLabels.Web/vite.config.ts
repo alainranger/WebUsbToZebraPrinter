@@ -5,17 +5,17 @@ import { svelte } from '@sveltejs/vite-plugin-svelte';
 export default defineConfig({
   plugins: [svelte()],
   server: {
-  	proxy: {
-  		'/api': {
-  			target: process.env.VITE_API_PROXY_TARGET || 'http://localhost:5000',
-  			changeOrigin: true,
-  			secure: false
-  		},
-  		'/health': {
-  			target: process.env.VITE_API_PROXY_TARGET || 'http://localhost:5000',
-  			changeOrigin: true,
-  			secure: false
-  		}
-  	}
+    proxy: {
+      '/api': {
+        target: process.env.VITE_API_PROXY_TARGET || 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/health': {
+        target: process.env.VITE_API_PROXY_TARGET || 'http://localhost:5000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
-})
+});

@@ -1,18 +1,14 @@
 <svelte:options runes={true} />
 
 <script lang="ts">
-  import { onMount } from "svelte";
-  import { apiClient } from "../../lib/api/client";
-  import type {
-    ApiProblem,
-    LabelTemplateDetails,
-    LabelTemplateSummary,
-  } from "../../lib/api/types";
-  import TemplateForm from "./TemplateForm.svelte";
-  import type { TemplateDraft } from "./TemplateForm.svelte";
+  import { onMount } from 'svelte';
+  import { apiClient } from '../../lib/api/client';
+  import type { ApiProblem, LabelTemplateDetails, LabelTemplateSummary } from '../../lib/api/types';
+  import TemplateForm from './TemplateForm.svelte';
+  import type { TemplateDraft } from './TemplateForm.svelte';
 
   // panel mode: null = closed, 'create' = new template, 'edit' = edit existing
-  type PanelMode = "create" | "edit" | null;
+  type PanelMode = 'create' | 'edit' | null;
 
   let templates = $state<LabelTemplateSummary[]>([]);
   let panelMode = $state<PanelMode>(null);
@@ -39,14 +35,14 @@
   function openCreate() {
     editingTemplate = null;
     formProblem = null;
-    panelMode = "create";
+    panelMode = 'create';
   }
 
   async function openEdit(templateId: string) {
     formProblem = null;
     try {
       editingTemplate = await apiClient.getTemplate(templateId);
-      panelMode = "edit";
+      panelMode = 'edit';
     } catch (error) {
       listProblem = error as ApiProblem;
     }
@@ -62,7 +58,7 @@
     saving = true;
     formProblem = null;
     try {
-      if (panelMode === "edit" && editingTemplate) {
+      if (panelMode === 'edit' && editingTemplate) {
         await apiClient.updateTemplate(editingTemplate.id, {
           name: draft.name,
           description: draft.description,
@@ -79,8 +75,22 @@
           rawContent: draft.rawContent,
           dimensions: { widthMm: draft.widthMm, heightMm: draft.heightMm, dpmm: draft.dpmm },
           variables: [
-            { name: "recipient", displayName: "Recipient", isRequired: true, defaultValue: "", exampleValue: "Ada Lovelace", order: 1 },
-            { name: "city", displayName: "City", isRequired: false, defaultValue: "Paris", exampleValue: "Paris", order: 2 },
+            {
+              name: 'recipient',
+              displayName: 'Recipient',
+              isRequired: true,
+              defaultValue: '',
+              exampleValue: 'Ada Lovelace',
+              order: 1,
+            },
+            {
+              name: 'city',
+              displayName: 'City',
+              isRequired: false,
+              defaultValue: 'Paris',
+              exampleValue: 'Paris',
+              order: 2,
+            },
           ],
         });
       }
@@ -103,7 +113,7 @@
   }
 
   function handleDeleteBackdropKeydown(event: KeyboardEvent) {
-    if (event.key === "Escape" || event.key === "Enter" || event.key === " ") {
+    if (event.key === 'Escape' || event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
       cancelDelete();
     }
@@ -179,7 +189,7 @@
                   disabled={deletingTemplateId === template.id}
                   onclick={() => requestDelete(template.id)}
                 >
-                  {deletingTemplateId === template.id ? "Deleting…" : "Delete"}
+                  {deletingTemplateId === template.id ? 'Deleting…' : 'Delete'}
                 </button>
               </td>
             </tr>
@@ -192,7 +202,7 @@
   <!-- Details: form panel -->
   {#if panelMode !== null}
     <TemplateForm
-      initialData={panelMode === "edit" ? editingTemplate : null}
+      initialData={panelMode === 'edit' ? editingTemplate : null}
       problem={formProblem}
       {saving}
       onSave={handleSave}
@@ -234,7 +244,7 @@
           onclick={confirmDelete}
           disabled={deletingTemplateId !== null}
         >
-          {deletingTemplateId !== null ? "Deleting…" : "Delete template"}
+          {deletingTemplateId !== null ? 'Deleting…' : 'Delete template'}
         </button>
       </div>
     </div>

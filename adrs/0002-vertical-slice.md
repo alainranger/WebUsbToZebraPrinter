@@ -19,4 +19,3 @@ Le backend et le frontend sont organisés par **features** et non par couches te
 
 - duplication légère acceptable entre slices,
 - shared code maintenu au strict minimum.
-

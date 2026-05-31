@@ -1,0 +1,11 @@
+# Node and build artifacts
+**/node_modules
+**/dist
+**/.svelte-kit
+
+# .NET build artifacts
+**/bin
+**/obj
+
+# VCS
+.git

@@ -145,4 +145,3 @@ Choisi par défaut pour:
 - Journaliser les erreurs sans exposer la totalité des labels sensibles en clair.
 - Restreindre les CORS au frontend connu.
 - Ne jamais accepter un endpoint arbitraire de rendu côté client.
-

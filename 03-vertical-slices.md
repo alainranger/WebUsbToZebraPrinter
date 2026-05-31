@@ -112,4 +112,3 @@ Responsabilités:
 3. `Preview`
 4. `PrintJobs`
 5. `Health` et observabilité
-

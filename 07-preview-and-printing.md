@@ -68,4 +68,3 @@ Option recommandée:
 - clé de cache = hash(`language`, `content`, `dimensions`, `outputType`)
 - courte durée
 - invalidation naturelle par changement de hash
-

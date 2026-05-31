@@ -109,4 +109,3 @@ Responsabilités:
 - `PrinterConnectionCard.svelte`
 - `PrintActionBar.svelte`
 - `ProblemAlert.svelte`
-

@@ -18,4 +18,3 @@ La prévisualisation repose sur **Labelize self-hosted** et transite via le back
 
 - un conteneur supplémentaire est requis dans Aspire,
 - l'API doit encapsuler les erreurs du moteur de rendu.
-

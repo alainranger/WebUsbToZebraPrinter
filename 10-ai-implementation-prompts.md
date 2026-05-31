@@ -83,4 +83,3 @@ Contraintes:
 - erreurs typées et messages UI actionnables
 - aucun accès WebUSB côté serveur
 ```
-

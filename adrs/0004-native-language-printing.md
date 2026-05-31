@@ -18,4 +18,3 @@ Un template est imprimé prioritairement dans son **langage source** (`EPL` ou `
 
 - la conversion EPL -> ZPL devient un fallback contrôlé,
 - le profil d'imprimante doit exposer ses capacités.
-

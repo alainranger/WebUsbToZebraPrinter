@@ -70,4 +70,3 @@ tests/
 - logique API dans `lib/api`,
 - logique WebUSB dans `lib/webusb`,
 - types partagés par feature.
-

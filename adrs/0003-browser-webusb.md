@@ -18,4 +18,3 @@ L'impression USB est initiée uniquement depuis le frontend, via WebUSB.
 
 - la logique de connexion et d'envoi USB vit dans `lib/webusb`,
 - l'API ne fait qu'orchestrer le contenu à imprimer et l'audit.
-

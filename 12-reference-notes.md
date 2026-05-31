@@ -30,4 +30,3 @@ Labelize est le moteur de rendu retenu car il:
 - produit **PNG et PDF**,
 - fonctionne en **HTTP microservice**,
 - peut être **self-hosted**.
-

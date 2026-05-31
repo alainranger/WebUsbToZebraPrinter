@@ -31,4 +31,3 @@ Ce dossier contient un **pack de cadrage prêt pour une IA** afin de générer u
 4. Brancher Labelize via Aspire.
 5. Ajouter WebUSB côté frontend.
 6. Terminer par les tests, la télémétrie et les gardes de sécurité.
-

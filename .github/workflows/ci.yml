@@ -1,0 +1,136 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+  push:
+    branches:
+      - main
+
+jobs:
+  dotnet-format:
+    name: .NET Format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore ZebraLabels.slnx
+
+      - name: Collect changed C# files
+        id: changed-csharp
+        uses: tj-actions/changed-files@v46
+        with:
+          files: |
+            **/*.cs
+            **/*.csproj
+
+      - name: Show changed C# files
+        if: steps.changed-csharp.outputs.any_changed == 'true'
+        run: echo "${{ steps.changed-csharp.outputs.all_changed_files }}"
+
+      - name: Verify .NET formatting
+        if: steps.changed-csharp.outputs.any_changed == 'true'
+        run: dotnet format ZebraLabels.slnx --verify-no-changes --no-restore --include ${{ steps.changed-csharp.outputs.all_changed_files }}
+
+      - name: Skip .NET formatting (no C# changes)
+        if: steps.changed-csharp.outputs.any_changed != 'true'
+        run: echo "No C# file changed in this PR."
+
+  web-markdown-format:
+    name: Web + Markdown Format
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/ZebraLabels.Web/package-lock.json
+
+      - name: Install web dependencies
+        run: npm ci --prefix src/ZebraLabels.Web
+
+      - name: Collect changed web and markdown files
+        id: changed-prettier
+        uses: tj-actions/changed-files@v46
+        with:
+          files: |
+            src/ZebraLabels.Web/**/*.{css,html,js,json,md,svelte,ts,yaml,yml}
+            *.md
+            adrs/**/*.md
+
+      - name: Show changed web and markdown files
+        if: steps.changed-prettier.outputs.any_changed == 'true'
+        run: echo "${{ steps.changed-prettier.outputs.all_changed_files }}"
+
+      - name: Verify Svelte and Markdown formatting
+        if: steps.changed-prettier.outputs.any_changed == 'true'
+        run: npm --prefix src/ZebraLabels.Web exec prettier --check ${{ steps.changed-prettier.outputs.all_changed_files }}
+
+      - name: Skip web and markdown formatting (no related changes)
+        if: steps.changed-prettier.outputs.any_changed != 'true'
+        run: echo "No web or markdown file changed in this PR."
+
+  dotnet-build-test:
+    name: .NET Build + Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore ZebraLabels.slnx
+
+      - name: Build
+        run: dotnet build ZebraLabels.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test ZebraLabels.slnx --configuration Release --no-build --verbosity normal
+
+  web-compile:
+    name: Web Compile
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: src/ZebraLabels.Web/package-lock.json
+
+      - name: Install web dependencies
+        run: npm ci --prefix src/ZebraLabels.Web
+
+      - name: Type check
+        run: npm --prefix src/ZebraLabels.Web run check
+
+      - name: Build
+        run: npm --prefix src/ZebraLabels.Web run build

@@ -44,4 +44,3 @@
 3. Connecter une imprimante Zebra.
 4. Imprimer en EPL.
 5. Réessayer avec un template ZPL.
-

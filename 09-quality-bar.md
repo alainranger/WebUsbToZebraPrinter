@@ -54,4 +54,3 @@
 - erreurs actionnables,
 - aucun comportement critique laissé ambigu,
 - instrumentation minimale en place.
-
